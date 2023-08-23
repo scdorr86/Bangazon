@@ -8,6 +8,8 @@ namespace Bangazon.Models
         public int userId { get; set; }
         public int statusId { get; set; }
         public int productId { get; set; }
+
+        public List<Product> Product { get; set; }
         public decimal orderTotal { get; set; }
         public int paymentType { get; set; }
     }
