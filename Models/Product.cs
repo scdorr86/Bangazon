@@ -10,5 +10,6 @@ namespace Bangazon.Models
         public decimal ProductPrice { get; set; }
         public int userId { get; set; }
         public List<Order> Orders { get; } = new();
+        public List<OrderProduct> OrderProducts { get; set; }
     }
 }
