@@ -87,7 +87,7 @@ public class BangazonDbContext : DbContext
             OrderProd3
         });
 
-         modelBuilder.Entity("OrderProduct").HasData(new Dictionary<string, object> { ["OrderId"] = Order1.Id, ["ProductId"] = Product1.Id });
+        // modelBuilder.Entity("OrderProduct").HasData(new Dictionary<string, object> { ["OrderId"] = Order1.Id, ["ProductId"] = Product1.Id });
 
         modelBuilder.Entity<ProductType>().HasData(new ProductType[]
         {
