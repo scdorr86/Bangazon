@@ -21,10 +21,11 @@ public class BangazonDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        
         modelBuilder.Entity<Order>().HasData(new Order[]
         {
-            new Order {Id = 1, userId = 1, statusId = 1, productId = 1, orderTotal = 10.00M, paymentType = 1},
-            new Order {Id = 2, userId = 2, statusId = 2, productId = 2, orderTotal = 20.00M, paymentType = 2}
+            new Order {Id = 1, userId = 1, statusId = 1, orderTotal = 10.00M, paymentType = 1},
+            new Order {Id = 2, userId = 2, statusId = 2, orderTotal = 20.00M, paymentType = 2}
         });
 
         modelBuilder.Entity<User>().HasData(new User[]
