@@ -6,7 +6,6 @@ public class BangazonDbContext : DbContext
 {
 
     public DbSet<Order> Orders { get; set; }
-    public DbSet<OrderProduct> OrderProducts { get; set; }
     public DbSet<OrderStatus> OrderStatuses { get; set; }
     public DbSet<PaymentType> PaymentTypes { get; set; }
     public DbSet<Product> Products { get; set; }
@@ -21,11 +20,30 @@ public class BangazonDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Order>().HasData(new Order[]
-        {
-            new Order {Id = 1, userId = 1, statusId = 1, productId = 1, orderTotal = 10.00M, paymentType = 1},
-            new Order {Id = 2, userId = 2, statusId = 2, productId = 2, orderTotal = 20.00M, paymentType = 2}
-        });
+
+        var Order1 = new Order { Id = 1, userId = 1, statusId = 1, paymentType = 1 };
+        var Order2 = new Order { Id = 2, userId = 2, statusId = 2, paymentType = 2 };
+        var Product1 = new Product { Id = 1, productType = 1, ProductName = "product 1", ProductPrice = 10.00M, userId = 1 };
+        var Product2 = new Product { Id = 2, productType = 2, ProductName = "product 2", ProductPrice = 20.00M, userId = 1 };
+        var Product3 = new Product { Id = 3, productType = 3, ProductName = "product 3", ProductPrice = 30.00M, userId = 0 };
+        var orderProduct = modelBuilder.Entity("OrderProduct");
+
+        //Order1.Products.Add(Product1);
+        //Order1.Products.Add(Product2);
+        //Order2.Products.Add(Product3);
+        //Product1.Orders.Add(Order1);
+        //Product2.Orders.Add(Order1);
+        //Product3.Orders.Add(Order2);
+
+        modelBuilder.Entity<Order>().HasData(Order1, Order2);
+
+        orderProduct.HasData(
+            new { OrdersId = 1, ProductsId = 1 },
+            new { OrdersId = 1, ProductsId = 2 },
+            new { OrdersId = 2, ProductsId = 3 });
+
+
+        modelBuilder.Entity<Product>().HasData(Product1,Product2,Product3);
 
         modelBuilder.Entity<User>().HasData(new User[]
         {
@@ -33,22 +51,10 @@ public class BangazonDbContext : DbContext
             new User {Id = 2, Name = "User2", FBkey = "", isSeller = false}
         });
 
-        modelBuilder.Entity<Product>().HasData(new Product[]
-        {
-            new Product {Id = 1, productType = 1, ProductName = "product 1", ProductPrice = 10.00M, userId = 1},
-            new Product {Id = 2, productType = 2, ProductName = "product 2", ProductPrice = 20.00M, userId = 1}
-        });
-
         modelBuilder.Entity<ProductType>().HasData(new ProductType[]
         {
             new ProductType {Id = 1, Type = "prod type 1"},
             new ProductType {Id = 2, Type = "prod type 2"}
-        });
-
-        modelBuilder.Entity<OrderProduct>().HasData(new OrderProduct[]
-        {
-            new OrderProduct {Id = 1, ProductId = 1, OrderId = 1},
-            new OrderProduct {Id = 2, ProductId = 2, OrderId = 2}
         });
 
         modelBuilder.Entity<PaymentType>().HasData(new PaymentType[]

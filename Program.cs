@@ -168,7 +168,7 @@ app.MapDelete("/api/orders/{id}", (BangazonDbContext db, int id) =>
     return Results.Ok(db.Orders);
 });
 
-app.MapPut("/api/products/{id}", (BangazonDbContext db, int id, Product product) =>
+app.MapPut("/api/orders/{id}", (BangazonDbContext db, int id, Product product) =>
 {
     Product prodToUpdate = db.Products.SingleOrDefault(p => p.Id == id);
     if (prodToUpdate == null)
