@@ -133,10 +133,36 @@ app.MapPut("/api/products/{id}", (BangazonDbContext db, int id, Product product)
     return Results.Ok(prodToUpdate);
 });
 
+//orders on products
+app.MapGet("/api/products/{id}/orders", (BangazonDbContext db, int id) =>
+{
+    var product = db.Products.Include(p => p.Orders).FirstOrDefault(p => p.Id == id);
+    return product;
+});
+
 // Orders CRUD endpoints
 app.MapGet("/api/orders", (BangazonDbContext db) =>
 {
     return db.Orders.ToList();
+});
+
+//products listed on an order
+app.MapGet("/api/orders/{id}/products", (BangazonDbContext db, int id) =>
+{
+    var Order = db.Orders.Include(o => o.Products).FirstOrDefault(o => o.Id == id);
+    return Order;
+});
+
+//add product to an order
+app.MapPost("/api/order", (BangazonDbContext db, int orderId, int prodId) =>
+{
+    var orderToUpdate = db.Orders.FirstOrDefault(o => o.Id == orderId);
+    var prodToAdd = db.Products.FirstOrDefault(p => p.Id == prodId);
+
+    orderToUpdate.Products.Add(prodToAdd);
+
+    db.SaveChanges();
+    return orderToUpdate;
 });
 
 app.MapPost("/api/Orders", (BangazonDbContext db, Order order) =>
