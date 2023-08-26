@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Bangazon.Migrations
 {
     [DbContext(typeof(BangazonDbContext))]
-    [Migration("20230824232852_InititalCreate")]
+    [Migration("20230826155252_InititalCreate")]
     partial class InititalCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -58,24 +58,6 @@ namespace Bangazon.Migrations
                             statusId = 2,
                             userId = 2
                         });
-                });
-
-            modelBuilder.Entity("Bangazon.Models.OrderProduct", b =>
-                {
-                    b.Property<int>("OrderId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("integer");
-
-                    b.HasKey("OrderId", "ProductId");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("OrderProducts");
                 });
 
             modelBuilder.Entity("Bangazon.Models.OrderStatus", b =>
@@ -303,25 +285,23 @@ namespace Bangazon.Migrations
                     b.HasIndex("ProductsId");
 
                     b.ToTable("OrderProduct");
-                });
 
-            modelBuilder.Entity("Bangazon.Models.OrderProduct", b =>
-                {
-                    b.HasOne("Bangazon.Models.Order", "Order")
-                        .WithMany("OrderProducts")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Bangazon.Models.Product", "Product")
-                        .WithMany("OrderProducts")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Order");
-
-                    b.Navigation("Product");
+                    b.HasData(
+                        new
+                        {
+                            OrdersId = 1,
+                            ProductsId = 1
+                        },
+                        new
+                        {
+                            OrdersId = 1,
+                            ProductsId = 2
+                        },
+                        new
+                        {
+                            OrdersId = 2,
+                            ProductsId = 3
+                        });
                 });
 
             modelBuilder.Entity("OrderProduct", b =>
@@ -337,16 +317,6 @@ namespace Bangazon.Migrations
                         .HasForeignKey("ProductsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Bangazon.Models.Order", b =>
-                {
-                    b.Navigation("OrderProducts");
-                });
-
-            modelBuilder.Entity("Bangazon.Models.Product", b =>
-                {
-                    b.Navigation("OrderProducts");
                 });
 #pragma warning restore 612, 618
         }

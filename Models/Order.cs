@@ -12,6 +12,5 @@ namespace Bangazon.Models
         [NotMapped]
         public decimal orderTotal => Products.Sum(p => p.ProductPrice);
         public int paymentType { get; set; }
-        public List<OrderProduct> OrderProducts { get; set; }
     }
 }
