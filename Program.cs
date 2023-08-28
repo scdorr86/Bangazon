@@ -209,5 +209,33 @@ app.MapPut("/api/orders/{id}", (BangazonDbContext db, int id, Product product) =
     return Results.Ok(prodToUpdate);
 });
 
+// Product Type CRUD endpoints
+app.MapGet("/api/prodtypes", (BangazonDbContext db) =>
+{
+    return db.ProductTypes.ToList();
+});
+
+app.MapGet("/api/prodtypes/{id}", (BangazonDbContext db, int id) =>
+{
+    ProductType prodtype = db.ProductTypes.SingleOrDefault(pt => pt.Id == id);
+    if (prodtype == null)
+    {
+        return Results.NotFound();
+    }
+    return Results.Ok(prodtype);
+});
+
+app.MapDelete("/api/prodtypes/{id}", (BangazonDbContext db, int id) =>
+{
+    ProductType prodtypeToDelete = db.ProductTypes.SingleOrDefault(pt => pt.Id == id);
+    if (prodtypeToDelete == null)
+    {
+        return Results.NotFound();
+    }
+    db.ProductTypes.Remove(prodtypeToDelete);
+    db.SaveChanges();
+    return Results.Ok(db.ProductTypes);
+});
+
 app.Run();
 
