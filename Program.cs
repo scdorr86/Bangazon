@@ -106,6 +106,16 @@ app.MapGet("/api/products/{id}", (BangazonDbContext db, int id) =>
     return Results.Ok(product);
 });
 
+app.MapGet("/api/prodwithtype/{id}", (BangazonDbContext db, int id) =>
+{
+    Product product = db.Products.Include(p => p.ProductType).Single(p => p.Id == id);
+    if (product == null)
+    {
+        return Results.NotFound();
+    }
+    return Results.Ok(product);
+});
+
 app.MapDelete("/api/products/{id}", (BangazonDbContext db, int id) =>
 {
     Product productToDelete = db.Products.SingleOrDefault(p => p.Id == id);
@@ -125,7 +135,7 @@ app.MapPut("/api/products/{id}", (BangazonDbContext db, int id, Product product)
     {
         return Results.NotFound();
     }
-    prodToUpdate.productType = product.productType;
+    prodToUpdate.productTypeId = product.productTypeId;
     prodToUpdate.ProductName = product.ProductName;
     prodToUpdate.ProductPrice = product.ProductPrice;
     prodToUpdate.userId = product.userId;
@@ -201,7 +211,7 @@ app.MapPut("/api/orders/{id}", (BangazonDbContext db, int id, Product product) =
     {
         return Results.NotFound();
     }
-    prodToUpdate.productType = product.productType;
+    prodToUpdate.productTypeId = product.productTypeId;
     prodToUpdate.ProductName = product.ProductName;
     prodToUpdate.ProductPrice = product.ProductPrice;
     prodToUpdate.userId = product.userId;
@@ -235,6 +245,25 @@ app.MapDelete("/api/prodtypes/{id}", (BangazonDbContext db, int id) =>
     db.ProductTypes.Remove(prodtypeToDelete);
     db.SaveChanges();
     return Results.Ok(db.ProductTypes);
+});
+
+app.MapPut("/api/prodtypes/{id}", (BangazonDbContext db, int id, ProductType prodtype) =>
+{
+    ProductType prodtypeToUpdate = db.ProductTypes.SingleOrDefault(pt => pt.Id == id);
+    if (prodtypeToUpdate == null)
+    {
+        return Results.NotFound();
+    }
+    prodtypeToUpdate.Type = prodtype.Type;
+    db.SaveChanges();
+    return Results.Ok(prodtypeToUpdate);
+});
+
+app.MapPost("/api/prodtypes", (BangazonDbContext db, ProductType prodtype) =>
+{
+    db.ProductTypes.Add(prodtype);
+    db.SaveChanges();
+    return Results.Created($"/api/products/{prodtype.Id}", prodtype);
 });
 
 app.Run();
