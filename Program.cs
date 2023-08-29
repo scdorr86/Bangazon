@@ -266,5 +266,52 @@ app.MapPost("/api/prodtypes", (BangazonDbContext db, ProductType prodtype) =>
     return Results.Created($"/api/products/{prodtype.Id}", prodtype);
 });
 
+// Payment Type CRUD endpoints
+app.MapGet("/api/paytypes", (BangazonDbContext db) =>
+{
+    return db.PaymentTypes.ToList();
+});
+
+app.MapGet("/api/paytypes/{id}", (BangazonDbContext db, int id) =>
+{
+    PaymentType paytype = db.PaymentTypes.SingleOrDefault(pt => pt.Id == id);
+    if (paytype == null)
+    {
+        return Results.NotFound();
+    }
+    return Results.Ok(paytype);
+});
+
+app.MapDelete("/api/paytypes/{id}", (BangazonDbContext db, int id) =>
+{
+    PaymentType payTypeToDelete = db.PaymentTypes.SingleOrDefault(pt => pt.Id == id);
+    if (payTypeToDelete == null)
+    {
+        return Results.NotFound();
+    }
+    db.PaymentTypes.Remove(payTypeToDelete);
+    db.SaveChanges();
+    return Results.Ok(db.PaymentTypes);
+});
+
+app.MapPut("/api/paytypes/{id}", (BangazonDbContext db, int id, PaymentType paytype) =>
+{
+    ProductType paytypeToUpdate = db.ProductTypes.SingleOrDefault(pt => pt.Id == id);
+    if (paytypeToUpdate == null)
+    {
+        return Results.NotFound();
+    }
+    paytypeToUpdate.Type = paytype.Type;
+    db.SaveChanges();
+    return Results.Ok(paytypeToUpdate);
+});
+
+app.MapPost("/api/paytypes", (BangazonDbContext db, PaymentType paytype) =>
+{
+    db.PaymentTypes.Add(paytype);
+    db.SaveChanges();
+    return Results.Created($"/api/products/{paytype.Id}", paytype);
+});
+
 app.Run();
 
