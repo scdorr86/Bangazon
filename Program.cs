@@ -6,6 +6,18 @@ using System.Runtime.CompilerServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:3000",
+                                "http://localhost:7040")
+                                .AllowAnyHeader()
+                                .AllowAnyMethod();
+        });
+});
+
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -25,12 +37,27 @@ builder.Services.Configure<JsonOptions>(options =>
 
 var app = builder.Build();
 
+//Add for Cors 
+app.UseCors();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// CHECK IF USER EXISTS
+
+app.MapGet("/api/checkuser/{authId}", (BangazonDbContext db, string authId) => 
+{
+    var authUser = db.Users.Where(u => u.FBkey == authId).FirstOrDefault();
+    if (authUser != null)
+    {
+        return Results.NotFound();
+    }
+    return Results.Ok(authUser);
+});
 
 // User CRUD Endpoints
 
@@ -106,6 +133,16 @@ app.MapGet("/api/products/{id}", (BangazonDbContext db, int id) =>
     return Results.Ok(product);
 });
 
+app.MapGet("/api/prodwithtype/{id}", (BangazonDbContext db, int id) =>
+{
+    Product product = db.Products.Include(p => p.ProductType).Single(p => p.Id == id);
+    if (product == null)
+    {
+        return Results.NotFound();
+    }
+    return Results.Ok(product);
+});
+
 app.MapDelete("/api/products/{id}", (BangazonDbContext db, int id) =>
 {
     Product productToDelete = db.Products.SingleOrDefault(p => p.Id == id);
@@ -125,7 +162,7 @@ app.MapPut("/api/products/{id}", (BangazonDbContext db, int id, Product product)
     {
         return Results.NotFound();
     }
-    prodToUpdate.productType = product.productType;
+    prodToUpdate.productTypeId = product.productTypeId;
     prodToUpdate.ProductName = product.ProductName;
     prodToUpdate.ProductPrice = product.ProductPrice;
     prodToUpdate.userId = product.userId;
@@ -201,7 +238,7 @@ app.MapPut("/api/orders/{id}", (BangazonDbContext db, int id, Product product) =
     {
         return Results.NotFound();
     }
-    prodToUpdate.productType = product.productType;
+    prodToUpdate.productTypeId = product.productTypeId;
     prodToUpdate.ProductName = product.ProductName;
     prodToUpdate.ProductPrice = product.ProductPrice;
     prodToUpdate.userId = product.userId;
@@ -235,6 +272,72 @@ app.MapDelete("/api/prodtypes/{id}", (BangazonDbContext db, int id) =>
     db.ProductTypes.Remove(prodtypeToDelete);
     db.SaveChanges();
     return Results.Ok(db.ProductTypes);
+});
+
+app.MapPut("/api/prodtypes/{id}", (BangazonDbContext db, int id, ProductType prodtype) =>
+{
+    ProductType prodtypeToUpdate = db.ProductTypes.SingleOrDefault(pt => pt.Id == id);
+    if (prodtypeToUpdate == null)
+    {
+        return Results.NotFound();
+    }
+    prodtypeToUpdate.Type = prodtype.Type;
+    db.SaveChanges();
+    return Results.Ok(prodtypeToUpdate);
+});
+
+app.MapPost("/api/prodtypes", (BangazonDbContext db, ProductType prodtype) =>
+{
+    db.ProductTypes.Add(prodtype);
+    db.SaveChanges();
+    return Results.Created($"/api/products/{prodtype.Id}", prodtype);
+});
+
+// Payment Type CRUD endpoints
+app.MapGet("/api/paytypes", (BangazonDbContext db) =>
+{
+    return db.PaymentTypes.ToList();
+});
+
+app.MapGet("/api/paytypes/{id}", (BangazonDbContext db, int id) =>
+{
+    PaymentType paytype = db.PaymentTypes.SingleOrDefault(pt => pt.Id == id);
+    if (paytype == null)
+    {
+        return Results.NotFound();
+    }
+    return Results.Ok(paytype);
+});
+
+app.MapDelete("/api/paytypes/{id}", (BangazonDbContext db, int id) =>
+{
+    PaymentType payTypeToDelete = db.PaymentTypes.SingleOrDefault(pt => pt.Id == id);
+    if (payTypeToDelete == null)
+    {
+        return Results.NotFound();
+    }
+    db.PaymentTypes.Remove(payTypeToDelete);
+    db.SaveChanges();
+    return Results.Ok(db.PaymentTypes);
+});
+
+app.MapPut("/api/paytypes/{id}", (BangazonDbContext db, int id, PaymentType paytype) =>
+{
+    ProductType paytypeToUpdate = db.ProductTypes.SingleOrDefault(pt => pt.Id == id);
+    if (paytypeToUpdate == null)
+    {
+        return Results.NotFound();
+    }
+    paytypeToUpdate.Type = paytype.Type;
+    db.SaveChanges();
+    return Results.Ok(paytypeToUpdate);
+});
+
+app.MapPost("/api/paytypes", (BangazonDbContext db, PaymentType paytype) =>
+{
+    db.PaymentTypes.Add(paytype);
+    db.SaveChanges();
+    return Results.Created($"/api/products/{paytype.Id}", paytype);
 });
 
 app.Run();

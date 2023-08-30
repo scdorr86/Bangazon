@@ -23,9 +23,9 @@ public class BangazonDbContext : DbContext
 
         var Order1 = new Order { Id = 1, userId = 1, statusId = 1, paymentType = 1 };
         var Order2 = new Order { Id = 2, userId = 2, statusId = 2, paymentType = 2 };
-        var Product1 = new Product { Id = 1, productType = 1, ProductName = "product 1", ProductPrice = 10.00M, userId = 1 };
-        var Product2 = new Product { Id = 2, productType = 2, ProductName = "product 2", ProductPrice = 20.00M, userId = 1 };
-        var Product3 = new Product { Id = 3, productType = 3, ProductName = "product 3", ProductPrice = 30.00M, userId = 0 };
+        var Product1 = new Product { Id = 1, productTypeId = 1, ProductName = "product 1", ProductPrice = 10.00M, userId = 1 };
+        var Product2 = new Product { Id = 2, productTypeId = 2, ProductName = "product 2", ProductPrice = 20.00M, userId = 1 };
+        var Product3 = new Product { Id = 3, productTypeId = 3, ProductName = "product 3", ProductPrice = 30.00M, userId = 0 };
         var orderProduct = modelBuilder.Entity("OrderProduct");
 
         //Order1.Products.Add(Product1);
