@@ -6,6 +6,18 @@ using System.Runtime.CompilerServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:3000",
+                                "http://localhost:7040")
+                                .AllowAnyHeader()
+                                .AllowAnyMethod();
+        });
+});
+
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -25,12 +37,27 @@ builder.Services.Configure<JsonOptions>(options =>
 
 var app = builder.Build();
 
+//Add for Cors 
+app.UseCors();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// CHECK IF USER EXISTS
+
+app.MapGet("/api/checkuser/{authId}", (BangazonDbContext db, string authId) => 
+{
+    var authUser = db.Users.Where(u => u.FBkey == authId).FirstOrDefault();
+    if (authUser != null)
+    {
+        return Results.NotFound();
+    }
+    return Results.Ok(authUser);
+});
 
 // User CRUD Endpoints
 
