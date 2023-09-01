@@ -54,7 +54,7 @@ app.MapGet("/api/checkuser/{authId}", (BangazonDbContext db, string authId) =>
     var authUser = db.Users.Where(u => u.FBkey == authId).FirstOrDefault();
     if (authUser == null)
     {
-        return Results.NotFound();
+        return Results.StatusCode(204);
     }
     return Results.Ok(authUser);
 });
